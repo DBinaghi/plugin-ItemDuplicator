@@ -1,1 +1,70 @@
-as
+# Translation for the Item Duplicator plugin for Omeka.
+# Copyright (C) 2018 Daniele Binaghi
+# This file is distributed under the same license as the Omeka package.
+# Daniele Binaghi <admin@bitoteko.it>, 2018
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Item Duplicator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-07-08 11:54+0200\n"
+"PO-Revision-Date: 2018-07-08 12:06+0200\n"
+"Last-Translator: Daniele Binaghi <admin@bitoteko.it>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ItemDuplicator.php:12
+msgid "Duplicate"
+msgstr "Duplica"
+
+#: config_form.php:9
+msgid "Allowed users"
+msgstr "Utenti autorizzati"
+
+#: config_form.php:13
+msgid "Restrict privilege"
+msgstr "Restrizione privilegi"
+
+#: config_form.php:17
+msgid "If checked, only users with Super User or Admin role will be able to duplicate Items."
+msgstr "Se selezionata, solo gli utenti con ruolo Super User o Admin saranno in grado di duplicare elementi."
+
+#: config_form.php:23
+msgid "Information removal"
+msgstr "Rimozione informazioni"
+
+#: config_form.php:28
+msgid "Empty Title field"
+msgstr "Svuota campo Titolo"
+
+#: config_form.php:32
+msgid "If checked, field DublinCore:Title will be emptied when showing duplicate Item."
+msgstr "Se selezionata, il campo Titolo (DublinCore:Title) verrà svuotato alla visualizzazione dell'elemento duplicato."
+
+#: config_form.php:40
+msgid "Svuota campo Soggetto"
+msgstr ""
+
+#: config_form.php:44
+msgid "If checked, field DublinCore:Subject will be emptied when showing duplicate Item."
+msgstr "Se selezionata, il campo Soggetto (DublinCore:Subject) verrà svuotato alla visualizzazione dell'elemento duplicato."
+
+#: config_form.php:52
+msgid "Svuota campo Data"
+msgstr ""
+
+#: config_form.php:56
+msgid "If checked, field DublinCore:Date will be emptied when showing duplicate Item."
+msgstr "Se selezionata, il campo Data (DublinCore:Date) verrà svuotato alla visualizzazione dell'elemento duplicato."
+
+#: config_form.php:64
+msgid "Remove Tags"
+msgstr "Rimozione Tag"
+
+#: config_form.php:68
+msgid "If checked, Tags will be removed when showing duplicate Item."
+msgstr "Se selezionata, i <i>tag</i> verranno rimossi alla visualizzazione dell'elemento duplicato."
