@@ -28,13 +28,17 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
     {
         set_option('item_duplicator_restricted', '0');    
         set_option('item_duplicator_empty_title', '1');    
-        set_option('item_duplicator_empty_tags', '0');    
- 	}
+        set_option('item_duplicator_empty_subject', '1');    
+        set_option('item_duplicator_empty_date', '1');    
+        set_option('item_duplicator_empty_tags', '0');   
+    }
 
     public function hookUninstall()
     {
         delete_option('item_duplicator_restricted');
         delete_option('item_duplicator_empty_title');
+        delete_option('item_duplicator_empty_subject');
+        delete_option('item_duplicator_empty_date');
         delete_option('item_duplicator_empty_tags');
     }
 
@@ -46,9 +50,11 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	public function hookConfig($args)
     {
         $post = $args['post'];
-        set_option('item_duplicator_restricted',  $post['item_duplicator_restricted']);
-        set_option('item_duplicator_empty_title', $post['item_duplicator_empty_title']);
-        set_option('item_duplicator_empty_tags',  $post['item_duplicator_empty_tags']);
+        set_option('item_duplicator_restricted',  	$post['item_duplicator_restricted']);
+        set_option('item_duplicator_empty_title', 	$post['item_duplicator_empty_title']);
+        set_option('item_duplicator_empty_subject', $post['item_duplicator_empty_subject']);
+        set_option('item_duplicator_empty_date', 	$post['item_duplicator_empty_date']);
+        set_option('item_duplicator_empty_tags', 	$post['item_duplicator_empty_tags']);
     }
 	
 	public function hookConfigForm()
@@ -159,38 +165,11 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 					}
 				}, false);
 			");
-		} else {
-			queue_js_string("
-				document.addEventListener('DOMContentLoaded', function() {
-					alert('Controller: " . $controller . "');
-					alert('Action: " . $action . "');
-				}, false);
-			");
 		}
     }
 	
 	function hookDefineRoutes($args)
-    {
-        // Don't add these routes on the admin side to avoid conflicts.
-        if (is_admin_theme()) {
-            return;
-        }
-
-        $router = $args['router'];
-
-        // Add custom routes based on the page slug.
-		$router->addRoute(
-			'item_duplicator_duplicate_item_' . $page->id,
-			new Zend_Controller_Router_Route(
-				$page->slug,
-				array(
-					'module'       => 'item-duplicator',
-					'controller'   => 'items',
-					'action'       => 'duplicate',
-					'id'           => $page->id
-				)
-			)
-		);
-    }
+	{
+	}
 
 }
