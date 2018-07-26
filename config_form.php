@@ -1,9 +1,11 @@
 <?php
-$item_duplicator_restricted		= get_option('item_duplicator_restricted');
-$item_duplicator_empty_title	= get_option('item_duplicator_empty_title');
-$item_duplicator_empty_subject	= get_option('item_duplicator_empty_subject');
-$item_duplicator_empty_date		= get_option('item_duplicator_empty_date');
-$item_duplicator_empty_tags		= get_option('item_duplicator_empty_tags');
+$item_duplicator_restricted				= get_option('item_duplicator_restricted');
+$item_duplicator_empty_title			= get_option('item_duplicator_empty_title');
+$item_duplicator_empty_subject			= get_option('item_duplicator_empty_subject');
+$item_duplicator_empty_date				= get_option('item_duplicator_empty_date');
+$item_duplicator_empty_tags				= get_option('item_duplicator_empty_tags');
+$item_duplicator_empty_fields_check		= get_option('item_duplicator_empty_fields_check');
+$item_duplicator_empty_fields_highlight	= get_option('item_duplicator_empty_fields_highlight');
 $view = get_view();
 ?>
 
@@ -21,8 +23,7 @@ $view = get_view();
 	</div>
 </div>
 
-<h2><?php echo __('Information removal'); ?></h2>
-
+<h2><?php echo __('Fields resetting'); ?></h2>
 
 <div class="field">
 	<div class="two columns alpha">
@@ -59,6 +60,32 @@ $view = get_view();
 		<?php echo $view->formCheckbox('item_duplicator_empty_date', $item_duplicator_empty_date, null, array('1', '0')); ?>
 	</div>
 </div>
+
+<div class="field">
+	<div class="two columns alpha">
+		<?php echo $view->formLabel('item_duplicator_empty_fields_check', __('Check for empty fields')); ?>
+	</div>
+	<div class="inputs five columns omega">
+		<p class="explanation">
+			<?php echo __('If checked, fields above are checked before saving and, if found empty, ... .'); ?>
+		</p>
+		<?php echo $view->formCheckbox('item_duplicator_empty_fields_check', $item_duplicator_empty_fields_check, null, array('1', '0')); ?>
+	</div>
+</div>
+
+<div class="field">
+	<div class="two columns alpha">
+		<?php echo $view->formLabel('item_duplicator_empty_fields_highlight', __('Highlight empty fields')); ?>
+	</div>
+	<div class="inputs five columns omega">
+		<p class="explanation">
+			<?php echo __('Provide a hex code to highlight empty fields (blank means no highlight).'); ?>
+		</p>
+		<?php echo $view->formText('item_duplicator_empty_fields_highlight', $item_duplicator_empty_fields_highlight, null, ''); ?>
+	</div>
+</div>
+
+<h2><?php echo __('Tags resetting'); ?></h2>
 
 <div class="field">
 	<div class="two columns alpha">
