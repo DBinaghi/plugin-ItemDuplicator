@@ -10,6 +10,8 @@
  
 // Define Constants
 define('ITEM_DUPLICATOR_DUPLICATE', __('Duplicate'));
+$hcolor = get_option('item_duplicator_empty_fields_highlight');
+define('ITEM_DUPLICATOR_HIGHLIGHT_COLOR', (preg_match('/#([a-f0-9]{3}){1,2}\b/i', $hcolor) ? $hcolor : ''));
 
 class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 {
@@ -21,8 +23,16 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		'config_form',
         'define_acl',
 		'admin_head',
+		'before_save_item',
 		'define_routes'
     );
+	
+	// Define Filters
+    protected $_filters = array(
+		'emptyTitleField' => array('ElementInput', 'Item', 'Dublin Core', 'Title'),
+		'emptySubjectField' => array('ElementInput', 'Item', 'Dublin Core', 'Subject'),
+		'emptyDateField' => array('ElementInput', 'Item', 'Dublin Core', 'Date')
+	);
 
     public function hookInstall()
     {
@@ -30,8 +40,10 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
         set_option('item_duplicator_empty_title', '1');    
         set_option('item_duplicator_empty_subject', '1');    
         set_option('item_duplicator_empty_date', '1');    
-        set_option('item_duplicator_empty_tags', '0');   
-    }
+        set_option('item_duplicator_empty_fields_check', '1');    
+        set_option('item_duplicator_empty_fields_highlight', '');    
+        set_option('item_duplicator_empty_tags', '0');    
+ 	}
 
     public function hookUninstall()
     {
@@ -39,6 +51,8 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
         delete_option('item_duplicator_empty_title');
         delete_option('item_duplicator_empty_subject');
         delete_option('item_duplicator_empty_date');
+        delete_option('item_duplicator_empty_fields_check');
+        delete_option('item_duplicator_empty_fields_highlight');
         delete_option('item_duplicator_empty_tags');
     }
 
@@ -50,11 +64,13 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	public function hookConfig($args)
     {
         $post = $args['post'];
-        set_option('item_duplicator_restricted',  	$post['item_duplicator_restricted']);
-        set_option('item_duplicator_empty_title', 	$post['item_duplicator_empty_title']);
-        set_option('item_duplicator_empty_subject', $post['item_duplicator_empty_subject']);
-        set_option('item_duplicator_empty_date', 	$post['item_duplicator_empty_date']);
-        set_option('item_duplicator_empty_tags', 	$post['item_duplicator_empty_tags']);
+        set_option('item_duplicator_restricted',  			$post['item_duplicator_restricted']);
+        set_option('item_duplicator_empty_title', 			$post['item_duplicator_empty_title']);
+        set_option('item_duplicator_empty_subject', 		$post['item_duplicator_empty_subject']);
+        set_option('item_duplicator_empty_date', 			$post['item_duplicator_empty_date']);
+        set_option('item_duplicator_empty_fields_check',	$post['item_duplicator_empty_fields_check']);
+        set_option('item_duplicator_empty_fields_highlight',$post['item_duplicator_empty_fields_highlight']);
+        set_option('item_duplicator_empty_tags', 			$post['item_duplicator_empty_tags']);
     }
 	
 	public function hookConfigForm()
@@ -132,7 +148,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 						var regex = />([^<][a-zA-Z]*)</gi;
 						var buttons = panel.children;
 						for (i=0; i < buttons.length; i++) {
-							if (buttons[i].href.indexOf('/edit/') > 0) {
+							if (buttons[i].href.indexOf('/items/edit/') > 0) {
 								var cln = buttons[i].cloneNode(true);
 								cln.innerHTML = '" . __(ITEM_DUPLICATOR_DUPLICATE) . "';
 								cln.href = cln.href.replace('items/edit', 'items/duplicate');
@@ -168,7 +184,82 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		}
     }
 	
-	function hookDefineRoutes($args)
+	public function hookBeforeSaveItem($args)
+    {
+        $item = $args['record'];
+		
+		// doesn't really work: it seems the record is already the new one, so fields are all empty
+		if (get_option('item_duplicator_empty_fields_check')) {
+			$title = $item->getElementTexts('Dublin Core', 'Title');
+			if(empty($title)) {
+				$item->addError("DC Title", __('DC Title cannot be empty!'));
+			}
+			$subject = $item->getElementTexts('Dublin Core', 'Subject');
+			if(empty($subject)) {
+				$item->addError("DC Subject", __('DC Subject cannot be empty!'));
+			}
+			$date = metadata($item, array('Dublin Core', 'Date'));
+			if(empty($date)) {
+				$item->addError("DC Date", __('DC Date cannot be empty!'));
+			}
+		}
+    }
+	
+    public function emptyTitleField($components, $args)
+    {
+		if (get_option('item_duplicator_empty_title')) {
+			$request = Zend_Controller_Front::getInstance()->getRequest();
+			$controller = $request->getControllerName();
+			$action = $request->getActionName();
+			if ($controller == 'items' && $action == 'duplicate') {
+				$components['input'] = get_view()->formTextarea($args['input_name_stem'] . '[text]', '', array(
+					'cols' => 50,
+					'rows' => 3,
+					'autofocus' => 1,
+					'style' => 'background-color: ' . ITEM_DUPLICATOR_HIGHLIGHT_COLOR
+				));
+			}
+		}
+		return $components;
+    }
+
+	public function emptySubjectField($components, $args)
+    {
+		if (get_option('item_duplicator_empty_subject')) {
+			$request = Zend_Controller_Front::getInstance()->getRequest();
+			$controller = $request->getControllerName();
+			$action = $request->getActionName();
+			if ($controller == 'items' && $action == 'duplicate') {
+				$components['input'] = get_view()->formTextarea($args['input_name_stem'] . '[text]', '', array(
+					'cols' => 50,
+					'rows' => 3,
+					'autofocus' => 1,
+					'style' => 'background-color: ' . ITEM_DUPLICATOR_HIGHLIGHT_COLOR
+				));
+			}
+		}
+		return $components;
+    }
+
+	public function emptyDateField($components, $args)
+    {
+		if (get_option('item_duplicator_empty_date')) {
+			$request = Zend_Controller_Front::getInstance()->getRequest();
+			$controller = $request->getControllerName();
+			$action = $request->getActionName();
+			if ($controller == 'items' && $action == 'duplicate') {
+				$components['input'] = get_view()->formTextarea($args['input_name_stem'] . '[text]', '', array(
+					'cols' => 50,
+					'rows' => 3,
+					'autofocus' => 1,
+					'style' => 'background-color: ' . ITEM_DUPLICATOR_HIGHLIGHT_COLOR
+				));
+			}
+		}
+		return $components;
+    }
+
+	public function hookDefineRoutes($args)
 	{
 	}
 
