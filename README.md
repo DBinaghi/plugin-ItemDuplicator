@@ -1,6 +1,8 @@
-*******************************************************
-** under construction - needs files not included yet **
-*******************************************************
+***********************************************************************
+** Warning: plugin under construction - needs files not included yet **
+** please refer to https://forum.omeka.org/t/duplicate-an-item/4694  **
+** for more info. Contributes are welcome.
+***********************************************************************
 
 
 # Item Duplicator
