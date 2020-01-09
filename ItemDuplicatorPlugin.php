@@ -103,15 +103,15 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 				$acl->deny('editor', 'Items', 'duplicate');
 			}		
 		} else {
-			// contributors area able to duplicate
+			// contributors are aallowed to duplicate
 			$acl->allow('contributor', 'Items', 'duplicate');
 
-			// if author role exists, also authors are capable of duplicating
+			// if author role exists, also authors are allowed to duplicate
 			if ($acl->hasRole('author')) {
 				$acl->allow('author', 'Items', 'duplicate');
 			}   
 			
-			// if editor role exists, also editors are capable of duplicating
+			// if editor role exists, also editors are allowed to duplicate
 			if ($acl->hasRole('editor')) {
 				$acl->allow('editor', 'Items', 'duplicate');
 			}   
