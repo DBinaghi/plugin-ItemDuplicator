@@ -1,10 +1,3 @@
-*******************************************************
-** Warning: plugin under construction, not working - **
-** needs files not included yet; please refer to     **
-** https://forum.omeka.org/t/duplicate-an-item/4694  **
-** for more info. Contributes/pull requests welcome  **
-*******************************************************
-
 # Item Duplicator
 
 ## Description
@@ -16,3 +9,7 @@ Settings allow to choose who can duplicate Items, and whether Tags or some field
 ## Installation
 
 Copy the files to the plugins directory, and install from the Omeka plugins page
+
+## Warning / disclaimer
+
+Plugin is still under construction, to work it needs a change to core files; please refer to https://forum.omeka.org/t/duplicate-an-item/4694 for more info. Contributes and pull requests are always welcome.
