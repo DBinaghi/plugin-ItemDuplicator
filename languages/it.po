@@ -17,54 +17,118 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: ItemsController.php:27
+msgid "The item "%s" was successfully duplicated!"
+msgstr "Il documento "#%s" è stato duplicato con successo!"
+
+#: ItemsController.php:29
+msgid "The item #%s was successfully duplicated!"
+msgstr "Il documento #%s è stato duplicato con successo!"
+
+#: ItemsDuplicatorPlugin.php:209
+msgid "DC Title field cannot be empty!"
+msgstr "Il campo Titolo Dublin Core non può essere vuoto!"
+
+#: ItemsDuplicatorPlugin.php:220
+msgid "DC Subject field cannot be empty!"
+msgstr "Il campo Soggetto Dublin Core non può essere vuoto!"
+
+#: ItemsDuplicatorPlugin.php:231
+msgid "DC Date field cannot be empty!"
+msgstr "Il campo Data Dublin Core non può essere vuoto!"
+
+#: duplicate.php:8
+msgid "Duplicate Item %s"
+msgstr "Duplica documento %s"
+
+#: duplicate.php:19
+msgid "Add duplicate"
+msgstr "Aggiungi duplicato"
+
 #: ItemDuplicator.php:12
 msgid "Duplicate"
 msgstr "Duplica"
 
-#: config_form.php:9
+#: config_form.php:13
 msgid "Allowed users"
 msgstr "Utenti autorizzati"
 
-#: config_form.php:13
+#: config_form.php:17
 msgid "Restrict privilege"
 msgstr "Restrizione privilegi"
 
-#: config_form.php:17
+#: config_form.php:21
 msgid "If checked, only users with Super User or Admin role will be able to duplicate Items."
-msgstr "Se selezionata, solo gli utenti con ruolo Super User o Admin saranno in grado di duplicare elementi."
+msgstr "Se selezionata, solo gli utenti con ruolo Super User o Admin saranno in grado di duplicare documenti."
 
-#: config_form.php:23
-msgid "Information removal"
-msgstr "Rimozione informazioni"
+#: config_form.php:27
+msgid "Fields"
+msgstr "Campi"
 
-#: config_form.php:28
+#: config_form.php:31
 msgid "Empty Title field"
 msgstr "Svuota campo Titolo"
 
-#: config_form.php:32
+#: config_form.php:35
 msgid "If checked, field DublinCore:Title will be emptied when showing duplicate Item."
-msgstr "Se selezionata, il campo Titolo (DublinCore:Title) verrà svuotato alla visualizzazione dell'elemento duplicato."
+msgstr "Se selezionata, il campo Titolo (DublinCore:Title) verrà svuotato alla visualizzazione del documento duplicato."
 
-#: config_form.php:40
-msgid "Svuota campo Soggetto"
-msgstr ""
+#: config_form.php:43
+msgid "Empty Subject field"
+msgstr "Svuota campo Soggetto"
 
-#: config_form.php:44
+#: config_form.php:47
 msgid "If checked, field DublinCore:Subject will be emptied when showing duplicate Item."
-msgstr "Se selezionata, il campo Soggetto (DublinCore:Subject) verrà svuotato alla visualizzazione dell'elemento duplicato."
+msgstr "Se selezionata, il campo Soggetto (DublinCore:Subject) verrà svuotato alla visualizzazione del documento duplicato."
 
-#: config_form.php:52
-msgid "Svuota campo Data"
-msgstr ""
+#: config_form.php:55
+msgid "Empty Date field"
+msgstr "Svuota campo Data"
 
-#: config_form.php:56
+#: config_form.php:59
 msgid "If checked, field DublinCore:Date will be emptied when showing duplicate Item."
-msgstr "Se selezionata, il campo Data (DublinCore:Date) verrà svuotato alla visualizzazione dell'elemento duplicato."
+msgstr "Se selezionata, il campo Data (DublinCore:Date) verrà svuotato alla visualizzazione del documento duplicato."
 
-#: config_form.php:64
+#: config_form.php:67
+msgid "Check for empty fields"
+msgstr "Verifica campi vuoti"
+
+#: config_form.php:71
+msgid ""
+"If checked, fields above are checked before saving and, if any is found empty, "
+"a warning will be shown and the saving process will be interrupted."
+msgstr ""
+"Se selezionata, i campi sopraindicati sono controllati prima del salvataggio e, "
+"se trovati vuoti, un avviso verrà mostrato e il processo di salvataggio verrà interrotto."
+
+#: config_form.php:79
+msgid "Highlight emptied fields"
+msgstr "Evidenza campi svuotati"
+
+#: config_form.php:83
+msgid "Color hex code to highlight the fields that have been emptied (blank means no highlight)."
+msgstr "Codice hex del colore di sfondo per i campi che sono stati svuotati (vuoto significa colore di default)."
+
+#: config_form.php:89
+msgid "Tags"
+msgstr "Etichette"
+
+#: config_form.php:93
 msgid "Remove Tags"
-msgstr "Rimozione Tag"
+msgstr "Rimozione etichette"
 
-#: config_form.php:68
-msgid "If checked, Tags will be removed when showing duplicate Item."
-msgstr "Se selezionata, i <i>tag</i> verranno rimossi alla visualizzazione dell'elemento duplicato."
+#: config_form.php:97
+msgid "If checked, tags will be removed when showing duplicate Item."
+msgstr "Se selezionata, le etichette verranno rimosse alla visualizzazione del documento duplicato."
+
+#: config_form.php:103
+msgid "Publishing Item"
+msgstr "Pubblicazione documento"
+
+#: config_form.php:93
+msgid "Make private"
+msgstr "Rendi privato"
+
+#: config_form.php:97
+msgid "If checked, duplicate items will not be automatically made public, even if user role allows that."
+msgstr "Se selezionata, i documenti duplicati non saranno resi pubblici automaticamente anche se il ruolo utente lo permette."
