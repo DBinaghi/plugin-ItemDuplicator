@@ -15,6 +15,49 @@ class ItemDuplicator_ItemsController extends Omeka_Controller_AbstractActionCont
 
 	protected $_browseRecordsPerPage = self::RECORDS_PER_PAGE_SETTING;
 
+	public function init()
+	{
+		$this->_helper->db->setDefaultModelName('Item');
+	}
+
+	protected function _getDuplicateSuccessMessage($item)
+	{
+		$itemTitle = $this->_getElementMetadata($item, 'Dublin Core', 'Title');
+		if ($itemTitle != '') {
+			return __('The item "%s" was successfully duplicated!', $itemTitle);
+		} else {
+			return __('The item #%s was successfully duplicated!', strval($item->id));
+		}
+	}
+
+	/**
+	 * Gets the element sets for the 'Item' record type.
+	 * 
+	 * @return array The element sets for the 'Item' record type
+	 */
+	protected function _getItemElementSets()
+	{
+		return $this->_helper->db->getTable('ElementSet')->findByRecordType('Item');
+	}
+
+	protected function _getElementMetadata($item, $elementSetName, $elementName)
+	{
+		$m = new Omeka_View_Helper_Metadata;
+		return strip_formatting($m->metadata($item, array($elementSetName, $elementName)));
+	}
+
+    /**
+     * Redirect to another page after a record is successfully duplicated.
+     *
+     * The default is to redirect to this controller's browse page.
+     *
+     * @param Omeka_Record_AbstractRecord $record
+     */
+    protected function _redirectAfterDuplicate($record)
+    {
+        $this->_helper->redirector('browse', 'items', 'default');
+    }
+
 	/**
 	 * Similar to 'edit' action, except this saves record as new.
 	 *
@@ -35,7 +78,7 @@ class ItemDuplicator_ItemsController extends Omeka_Controller_AbstractActionCont
 		if (!Zend_Registry::isRegistered('file_derivative_creator') && is_allowed('Settings', 'duplicate')) {
 			$this->_helper->flashMessenger(__('The ImageMagick directory path has not been set. No derivative images will be created. If you would like Omeka to create derivative images, please set the path in Settings.'));
 		}
-		parent::addAction();
+		//parent::addAction();
 
 		$class = $this->_helper->db->getDefaultModelName();
 		$varName = $this->view->singularize($class);
@@ -56,11 +99,11 @@ class ItemDuplicator_ItemsController extends Omeka_Controller_AbstractActionCont
 			}
 			$record->setPostData($_POST);
 			if ($record->save(false)) {
-				$successMessage = $this->_getAddSuccessMessage($record);
+				$successMessage = $this->_getDuplicateSuccessMessage($record);
 				if ($successMessage != '') {
 					$this->_helper->flashMessenger($successMessage, 'success');
 				}
-				$this->_redirectAfterAdd($record);
+				$this->_redirectAfterDuplicate($record);
 			} else {
 				$this->_helper->flashMessenger($record->getErrors());
 			}
