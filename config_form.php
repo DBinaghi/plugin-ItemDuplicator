@@ -3,9 +3,10 @@ $item_duplicator_restricted				= get_option('item_duplicator_restricted');
 $item_duplicator_empty_title			= get_option('item_duplicator_empty_title');
 $item_duplicator_empty_subject			= get_option('item_duplicator_empty_subject');
 $item_duplicator_empty_date				= get_option('item_duplicator_empty_date');
-$item_duplicator_empty_tags				= get_option('item_duplicator_empty_tags');
 $item_duplicator_empty_fields_check		= get_option('item_duplicator_empty_fields_check');
 $item_duplicator_empty_fields_highlight	= get_option('item_duplicator_empty_fields_highlight');
+$item_duplicator_empty_tags				= get_option('item_duplicator_empty_tags');
+$item_duplicator_private				= get_option('item_duplicator_private');
 $view = get_view();
 ?>
 
@@ -23,7 +24,7 @@ $view = get_view();
 	</div>
 </div>
 
-<h2><?php echo __('Fields resetting'); ?></h2>
+<h2><?php echo __('Fields'); ?></h2>
 
 <div class="field">
 	<div class="two columns alpha">
@@ -67,7 +68,7 @@ $view = get_view();
 	</div>
 	<div class="inputs five columns omega">
 		<p class="explanation">
-			<?php echo __('If checked, fields above are checked before saving and, if found empty, ... .'); ?>
+			<?php echo __('If checked, fields above are checked before saving and, if any is found empty, a warning will be shown and the saving process will be interrupted.'); ?>
 		</p>
 		<?php echo $view->formCheckbox('item_duplicator_empty_fields_check', $item_duplicator_empty_fields_check, null, array('1', '0')); ?>
 	</div>
@@ -75,17 +76,17 @@ $view = get_view();
 
 <div class="field">
 	<div class="two columns alpha">
-		<?php echo $view->formLabel('item_duplicator_empty_fields_highlight', __('Highlight empty fields')); ?>
+		<?php echo $view->formLabel('item_duplicator_empty_fields_highlight', __('Highlight emptied fields')); ?>
 	</div>
 	<div class="inputs five columns omega">
 		<p class="explanation">
-			<?php echo __('Provide a hex code to highlight empty fields (blank means no highlight).'); ?>
+			<?php echo __('Color hex code to highlight the fields that have been emptied (blank means no highlight).'); ?>
 		</p>
 		<?php echo $view->formText('item_duplicator_empty_fields_highlight', $item_duplicator_empty_fields_highlight, null, ''); ?>
 	</div>
 </div>
 
-<h2><?php echo __('Tags resetting'); ?></h2>
+<h2><?php echo __('Tags'); ?></h2>
 
 <div class="field">
 	<div class="two columns alpha">
@@ -93,8 +94,22 @@ $view = get_view();
 	</div>
 	<div class="inputs five columns omega">
 		<p class="explanation">
-			<?php echo __('If checked, Tags will be removed when showing duplicate Item.'); ?>
+			<?php echo __('If checked, tags will be removed when showing duplicate Item.'); ?>
 		</p>
 		<?php echo $view->formCheckbox('item_duplicator_empty_tags', $item_duplicator_empty_tags, null, array('1', '0')); ?>
+	</div>
+</div>
+
+<h2><?php echo __('Publishing Item'); ?></h2>
+
+<div class="field">
+	<div class="two columns alpha">
+		<?php echo $view->formLabel('item_duplicator_private', __('Make private')); ?>
+	</div>
+	<div class="inputs five columns omega">
+		<p class="explanation">
+			<?php echo __('If checked, duplicate items will not be made automatically public, even if user role allows that.'); ?>
+		</p>
+		<?php echo $view->formCheckbox('item_duplicator_private', $item_duplicator_private, null, array('1', '0')); ?>
 	</div>
 </div>

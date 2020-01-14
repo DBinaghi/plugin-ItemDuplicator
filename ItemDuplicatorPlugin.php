@@ -10,6 +10,7 @@
  
 // Define Constants
 define('ITEM_DUPLICATOR_DUPLICATE', __('Duplicate'));
+define('ITEM_DUPLICATOR_NEWPATH', 'item-duplicator/items/duplicate/id');
 $hcolor = get_option('item_duplicator_empty_fields_highlight');
 define('ITEM_DUPLICATOR_HIGHLIGHT_COLOR', (preg_match('/#([a-f0-9]{3}){1,2}\b/i', $hcolor) ? $hcolor : ''));
 
@@ -24,7 +25,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		'define_acl',
 		'admin_head',
 		'before_save_item',
-		'define_routes'
+		'admin_items_panel_buttons'
 	);
 	
 	// Define Filters
@@ -102,15 +103,15 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 				$acl->deny('editor', 'Items', 'duplicate');
 			}		
 		} else {
-			// contributors are aallowed to duplicate
+			// contributors are able to duplicate
 			$acl->allow('contributor', 'Items', 'duplicate');
 
-			// if author role exists, also authors are allowed to duplicate
+			// if author role exists, also authors are capable of duplicating
 			if ($acl->hasRole('author')) {
 				$acl->allow('author', 'Items', 'duplicate');
 			}   
 			
-			// if editor role exists, also editors are allowed to duplicate
+			// if editor role exists, also editors are capable of duplicating
 			if ($acl->hasRole('editor')) {
 				$acl->allow('editor', 'Items', 'duplicate');
 			}   
@@ -133,7 +134,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 							for (ii=0; ii < listItems.length; ii++) {
 								var newLI = listItems[ii].innerHTML;
 								if (newLI.indexOf('items/edit') > 0) {
-									newLI = newLI.replace('items/edit', 'items/duplicate');
+									newLI = newLI.replace('items/edit', '" . ITEM_DUPLICATOR_NEWPATH . "');
 									newLI = newLI.replace(regex, '>" . __(ITEM_DUPLICATOR_DUPLICATE) . "<');
 									var entry = document.createElement('li');
 									entry.innerHTML = newLI;
@@ -148,13 +149,12 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 				queue_js_string("
 					document.addEventListener('DOMContentLoaded', function() {
 						var panel = document.getElementById('edit');
-						var regex = />([^<][a-zA-Z]*)</gi;
 						var buttons = panel.children;
 						for (i=0; i < buttons.length; i++) {
 							if (buttons[i].href.indexOf('/items/edit/') > 0) {
 								var cln = buttons[i].cloneNode(true);
 								cln.innerHTML = '" . __(ITEM_DUPLICATOR_DUPLICATE) . "';
-								cln.href = cln.href.replace('items/edit', 'items/duplicate');
+								cln.href = cln.href.replace('items/edit', '" . ITEM_DUPLICATOR_NEWPATH . "');
 								buttons[i].parentNode.insertBefore(cln, buttons[i].nextSibling);
 								break;
 							}
@@ -172,12 +172,10 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 							if (links[ii].href.indexOf('/items/edit/') > 0) {
 								var cln = links[ii].cloneNode(true);
 								cln.innerHTML = '" . __(ITEM_DUPLICATOR_DUPLICATE) . "';
-								cln.href = cln.href.replace('items/edit', 'items/duplicate');
+								cln.href = cln.href.replace('items/edit', '" . ITEM_DUPLICATOR_NEWPATH . "');
 								links[ii].parentNode.insertBefore(cln, links[ii].nextSibling);
-								
 								var textNode = document.createTextNode(' · ');
 								links[ii].parentNode.insertBefore(textNode, links[ii].nextSibling);
-								
 								break;
 							}
 						}	
@@ -189,47 +187,44 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	
 	public function hookBeforeSaveItem($args)
 	{
-		$item = $args['record'];
-		$post = $args['post'];
-		// if POST is empty, skip the validation, so it doesn't break when saving item in another way
-		if (!empty($post)) {
-			if (get_option('item_duplicator_empty_title')) {
-				// you may simply hardcode DC:Title element id, but it's safer for Item Type Metadata elements
+		//runs checks only when required
+		if (get_option(item_duplicator_empty_fields_check)) {
+			$item = $args['record'];
+			$post = $args['post'];
+			// if POST is empty, skip the validation, so it doesn't break when saving item in another way
+			if (!empty($post)) {
+				// one may simply hardcode DC:Title element id, but it's safer for Item Type Metadata elements
 				$titleElement = $item->getElement('Dublin Core', 'Title');
 				$title = '';
 				if (!empty($post['Elements'][$titleElement->id])) {
-					foreach ($post['Elements'][$titleElement->id] as $text) {
-						$title .= trim($text);
+					foreach ($post['Elements'][$titleElement->id] as $textbox) {
+						$title .= trim($textbox['text']);
 					}
 				}
 				if (empty($title)) {
-					$item->addError("DC Title", __('DC Title cannot be empty!'));
+					$item->addError("DC Title", __('DC Title field cannot be empty!'));
 				}
-			}
-			if (get_option('item_duplicator_empty_subject')) {
-				// you may simply hardcode DC:Subject element id, but it's safer for Item Type Metadata elements
+				// one may simply hardcode DC:Subject element id, but it's safer for Item Type Metadata elements
 				$subjectElement = $item->getElement('Dublin Core', 'Subject');
 				$subject = '';
 				if (!empty($post['Elements'][$subjectElement->id])) {
-					foreach ($post['Elements'][$subjectElement->id] as $text) {
-						$subject .= trim($text);
+					foreach ($post['Elements'][$subjectElement->id] as $textbox) {
+						$subject .= trim($textbox['text']);
 					}
 				}
 				if (empty($subject)) {
-					$item->addError("DC Subject", __('DC Subject cannot be empty!'));
+					$item->addError("DC Subject", __('DC Subject field cannot be empty!'));
 				}
-			}
-			if (get_option('item_duplicator_empty_date')) {
-				// you may simply hardcode DC:Date element id, but it's safer for Item Type Metadata elements
+				// one may simply hardcode DC:Date element id, but it's safer for Item Type Metadata elements
 				$dateElement = $item->getElement('Dublin Core', 'Date');
 				$date = '';
 				if (!empty($post['Elements'][$dateElement->id])) {
-					foreach ($post['Elements'][$dateElement->id] as $text) {
-						$date .= trim($text);
+					foreach ($post['Elements'][$dateElement->id] as $textbox) {
+						$date .= trim($textbox['text']);
 					}
 				}
 				if (empty($date)) {
-					$item->addError("DC Date", __('DC Date cannot be empty!'));
+					$item->addError("DC Date", __('DC Date field cannot be empty!'));
 				}
 			}
 		}
@@ -289,8 +284,13 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		return $components;
 	}
 
-	public function hookDefineRoutes($args)
+	public function hookAdminItemsPanelButtons($args)
 	{
-//		$args['router']->addConfig(new Zend_Config_Ini(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'routes.ini', 'routes'));
+		// Add a 'Cancel' button on the admin right button panel. It appears when editing or duplicating an existing
+		// item or adding a new item. When editing or duplicating, pressing the Cancel button takes the user back to
+		// the Show page for the item. When adding a new item, it takes them to the Dashboard.
+		$itemId = $args['record']->id;
+		$url = $itemId ? 'items/show/' . $itemId : '.';
+		echo '<a href=' . html_escape(admin_url($url)) . ' class="big blue button">' . __('Cancel') . '</a>';
 	}
 }
