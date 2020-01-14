@@ -42,7 +42,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		set_option('item_duplicator_empty_subject', '1');
 		set_option('item_duplicator_empty_date', '1');
 		set_option('item_duplicator_empty_fields_check', '1');
-		set_option('item_duplicator_empty_fields_highlight', '#ffcc00');
+		set_option('item_duplicator_empty_fields_highlight', '#FFFF66');
 		set_option('item_duplicator_empty_tags', '0');
 		set_option('item_duplicator_private', '1');
 	}
@@ -187,44 +187,53 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	
 	public function hookBeforeSaveItem($args)
 	{
-		//runs checks only when required
 		if (get_option(item_duplicator_empty_fields_check)) {
-			$item = $args['record'];
-			$post = $args['post'];
-			// if POST is empty, skip the validation, so it doesn't break when saving item in another way
-			if (!empty($post)) {
-				// one may simply hardcode DC:Title element id, but it's safer for Item Type Metadata elements
-				$titleElement = $item->getElement('Dublin Core', 'Title');
-				$title = '';
-				if (!empty($post['Elements'][$titleElement->id])) {
-					foreach ($post['Elements'][$titleElement->id] as $textbox) {
-						$title .= trim($textbox['text']);
+			$request = Zend_Controller_Front::getInstance()->getRequest();
+			$controller = $request->getControllerName();
+			$action = $request->getActionName();
+			//runs checks only when duplicating item
+			if ($controller == 'items' && $action == 'duplicate') {
+				$item = $args['record'];
+				$post = $args['post'];
+				// if POST is empty, skip the validation, so it doesn't break when saving item in another way
+				if (!empty($post)) {
+					// one may simply hardcode DC:Title element id, but it's safer for Item Type Metadata elements
+					$titleElement = $item->getElement('Dublin Core', 'Title');
+					$title = '';
+					if (!empty($post['Elements'][$titleElement->id])) {
+						foreach ($post['Elements'][$titleElement->id] as $textbox) {
+							$title .= trim($textbox['text']);
+						}
 					}
-				}
-				if (empty($title)) {
-					$item->addError("DC Title", __('DC Title field cannot be empty!'));
-				}
-				// one may simply hardcode DC:Subject element id, but it's safer for Item Type Metadata elements
-				$subjectElement = $item->getElement('Dublin Core', 'Subject');
-				$subject = '';
-				if (!empty($post['Elements'][$subjectElement->id])) {
-					foreach ($post['Elements'][$subjectElement->id] as $textbox) {
-						$subject .= trim($textbox['text']);
+					if (empty($title)) {
+						$item->addError("DC Title", __('DC Title field cannot be empty!'));
 					}
-				}
-				if (empty($subject)) {
-					$item->addError("DC Subject", __('DC Subject field cannot be empty!'));
-				}
-				// one may simply hardcode DC:Date element id, but it's safer for Item Type Metadata elements
-				$dateElement = $item->getElement('Dublin Core', 'Date');
-				$date = '';
-				if (!empty($post['Elements'][$dateElement->id])) {
-					foreach ($post['Elements'][$dateElement->id] as $textbox) {
-						$date .= trim($textbox['text']);
+					// one may simply hardcode DC:Subject element id, but it's safer for Item Type Metadata elements
+					$subjectElement = $item->getElement('Dublin Core', 'Subject');
+					$subject = '';
+					if (!empty($post['Elements'][$subjectElement->id])) {
+						foreach ($post['Elements'][$subjectElement->id] as $textbox) {
+							$subject .= trim($textbox['text']);
+						}
 					}
-				}
-				if (empty($date)) {
-					$item->addError("DC Date", __('DC Date field cannot be empty!'));
+					if (empty($subject)) {
+						$item->addError("DC Subject", __('DC Subject field cannot be empty!'));
+					}
+					// one may simply hardcode DC:Date element id, but it's safer for Item Type Metadata elements
+					$dateElement = $item->getElement('Dublin Core', 'Date');
+					$date = '';
+					if (!empty($post['Elements'][$dateElement->id])) {
+						foreach ($post['Elements'][$dateElement->id] as $textbox) {
+							$date .= trim($textbox['text']);
+						}
+					}
+					if (empty($date)) {
+						$item->addError("DC Date", __('DC Date field cannot be empty!'));
+					}
+					//checks whether item MUST be private
+					if (get_option(item_duplicator_private)) {
+						$item->setPublic(false);
+					}
 				}
 			}
 		}
