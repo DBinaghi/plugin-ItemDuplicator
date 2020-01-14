@@ -24,8 +24,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		'define_acl',
 		'admin_head',
 		'before_save_item',
-		'define_routes',
-		'admin_items_panel_buttons'
+		'define_routes'
 	);
 	
 	// Define Filters
