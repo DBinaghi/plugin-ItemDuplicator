@@ -2,10 +2,12 @@
 $itemTitle = metadata('item', 'display_title');
 if ($itemTitle != '' && $itemTitle != __('[Untitled]')) {
     $itemTitle = ': &quot;' . $itemTitle . '&quot; ';
+	$itemId = '#' . metadata('item', 'id');
 } else {
     $itemTitle = '';
+	$itemId = '';
 }
-$itemTitle = __('Duplicate Item #%s', metadata('item', 'id')) . $itemTitle;
+$itemTitle = __('Duplicate Item %s', $itemId) . $itemTitle;
 
 echo head(array('title'=> $itemTitle, 'bodyclass'=>'items edit'));
 include 'form-tabs.php';
@@ -16,7 +18,7 @@ echo flash();
 	<?php include 'form.php'; ?>
     <section class="three columns omega">
         <div id="save" class="panel">
-            <input type="submit" name="submit" class="submit big green button" id="add_item" value="<?php echo __('Duplicate Item'); ?>" />        
+            <input type="submit" name="submit" class="submit big green button" id="add_item" value="<?php echo __('Add duplicate'); ?>" />        
             
 			<?php fire_plugin_hook("admin_items_panel_buttons", array('view'=>$this, 'record'=>$item)); ?>
             
@@ -24,7 +26,13 @@ echo flash();
                 <?php if ( is_allowed('Items', 'makePublic') ): ?>
                     <div class="public">
                         <label for="public"><?php echo __('Public'); ?>:</label> 
-                        <?php echo $this->formCheckbox('public', $item->public, array(), array('1', '0')); ?>
+                        <?php 
+							if (get_option(item_duplicator_private)) {
+								echo $this->formCheckbox('public', '0', array('disabled' => '1'), array('1', '0'));
+							} else {
+								echo $this->formCheckbox('public', $item->public, array(), array('1', '0')); 
+							}
+						?>
                     </div>
                 <?php endif; ?>
                 <?php if ( is_allowed('Items', 'makeFeatured') ): ?>
