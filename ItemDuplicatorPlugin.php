@@ -183,7 +183,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 					}, false);
 				");
 			}
-		} elseif ($controller == 'index' && $action == 'index') {
+		} elseif (($controller == 'index' && $action == 'index') || ($controller == 'error' && $action == 'not-found')) {
 			queue_js_string("
 				document.addEventListener('DOMContentLoaded', function() {
 					var paragraphs = document.getElementsByClassName('dash-edit');
