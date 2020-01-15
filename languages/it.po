@@ -25,15 +25,15 @@ msgstr "Il documento "#%s" è stato duplicato con successo!"
 msgid "The item #%s was successfully duplicated!"
 msgstr "Il documento #%s è stato duplicato con successo!"
 
-#: ItemsDuplicatorPlugin.php:209
+#: ItemsDuplicatorPlugin.php:231
 msgid "DC Title field cannot be empty!"
 msgstr "Il campo Titolo Dublin Core non può essere vuoto!"
 
-#: ItemsDuplicatorPlugin.php:220
+#: ItemsDuplicatorPlugin.php:242
 msgid "DC Subject field cannot be empty!"
 msgstr "Il campo Soggetto Dublin Core non può essere vuoto!"
 
-#: ItemsDuplicatorPlugin.php:231
+#: ItemsDuplicatorPlugin.php:253
 msgid "DC Date field cannot be empty!"
 msgstr "Il campo Data Dublin Core non può essere vuoto!"
 
