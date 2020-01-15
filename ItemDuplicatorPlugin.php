@@ -10,7 +10,7 @@
  
 // Define Constants
 define('ITEM_DUPLICATOR_DUPLICATE', __('Duplicate'));
-define('ITEM_DUPLICATOR_NEWPATH', 'item-duplicator/items/duplicate/id');
+define('ITEM_DUPLICATOR_NEWPATH', 'items/duplicate');
 $hcolor = get_option('item_duplicator_empty_fields_highlight');
 define('ITEM_DUPLICATOR_HIGHLIGHT_COLOR', (preg_match('/#([a-f0-9]{3}){1,2}\b/i', $hcolor) ? $hcolor : ''));
 
@@ -23,6 +23,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		'config',
 		'config_form',
 		'define_acl',
+		'define_routes',
 		'admin_head',
 		'before_save_item',
 		'admin_items_panel_buttons'
@@ -116,6 +117,26 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 				$acl->allow('editor', 'Items', 'duplicate');
 			}   
 		}
+	}
+	
+	public function hookDefineRoutes($args)
+	{
+		// Don't add these routes on the public side to avoid conflicts.
+        	if (!is_admin_theme()) {
+            		return;
+		}
+		$router = $args['router'];
+		$router->addRoute(
+			'duplicate',
+			new Zend_Controller_Router_Route(
+				'items/duplicate/:id',
+				array(
+					'module'       => 'item-duplicator',
+					'controller'   => 'items',
+					'action'       => 'duplicate'
+				)
+			)
+		);
 	}
 	
 	public function hookAdminHead()
