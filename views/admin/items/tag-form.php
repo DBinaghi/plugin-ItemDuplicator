@@ -1,24 +1,17 @@
 <div id="tag-form" class="field">
     <?php
         $tags = $item->getTags();
-
-// - aggiunto da Daniele
-		if (get_option('item_duplicator_empty_tags')) $tags = array();
-
-		$request = Zend_Controller_Front::getInstance()->getRequest();
+	if (get_option('item_duplicator_empty_tags')) $tags = array();
+	$request = Zend_Controller_Front::getInstance()->getRequest();
         $controller = $request->getControllerName();
         $action = $request->getActionName();
         if ($controller == 'items' && $action == 'duplicate') {            
-			$tags_text = implode(option('tag_delimiter'), $tags);
+		$tags_text = implode(option('tag_delimiter'), $tags);
         } else {
-			$tags_text = '';
-		}
-// - fine aggiunta da Daniele
-	?>
+		$tags_text = '';
+	}
+    ?>
 
-<!-- modificato da Daniele
-    <input type="hidden" name="tags-to-add" id="tags-to-add" value="" />
--->
     <input type="hidden" name="tags-to-add" id="tags-to-add" value="<?php echo $tags_text?>" />
     <input type="hidden" name="tags-to-delete" id="tags-to-delete" value="" />
     <div id="add-tags">
