@@ -106,8 +106,12 @@ msgid "Highlight emptied fields"
 msgstr "Evidenza campi svuotati"
 
 #: config_form.php:83
-msgid "Color hex code to highlight the fields that have been emptied (blank means no highlight)."
-msgstr "Codice hex del colore di sfondo per i campi che sono stati svuotati (vuoto significa colore di default)."
+msgid "Color hex code (e.g.: #ff0000) to highlight the fields that have been emptied (blank means no highlight)."
+msgstr "Codice hex (p.e.: #ff0000) del colore di sfondo per i campi che sono stati svuotati (vuoto significa colore di default)."
+
+#: config_form.php:85
+msgid "pound sign (#) followed by six hex values"
+msgstr "cancelletto (#) seguito da 6 valori esadecimali"
 
 #: config_form.php:89
 msgid "Tags"
