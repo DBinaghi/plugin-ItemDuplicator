@@ -1,12 +1,12 @@
 <?php
-$item_duplicator_restricted				= get_option('item_duplicator_restricted');
-$item_duplicator_empty_title			= get_option('item_duplicator_empty_title');
-$item_duplicator_empty_subject			= get_option('item_duplicator_empty_subject');
-$item_duplicator_empty_date				= get_option('item_duplicator_empty_date');
-$item_duplicator_empty_fields_check		= get_option('item_duplicator_empty_fields_check');
+$item_duplicator_restricted		= get_option('item_duplicator_restricted');
+$item_duplicator_empty_title		= get_option('item_duplicator_empty_title');
+$item_duplicator_empty_subject		= get_option('item_duplicator_empty_subject');
+$item_duplicator_empty_date		= get_option('item_duplicator_empty_date');
+$item_duplicator_empty_fields_check	= get_option('item_duplicator_empty_fields_check');
 $item_duplicator_empty_fields_highlight	= get_option('item_duplicator_empty_fields_highlight');
-$item_duplicator_empty_tags				= get_option('item_duplicator_empty_tags');
-$item_duplicator_private				= get_option('item_duplicator_private');
+$item_duplicator_empty_tags		= get_option('item_duplicator_empty_tags');
+$item_duplicator_private		= get_option('item_duplicator_private');
 $view = get_view();
 ?>
 
@@ -80,9 +80,9 @@ $view = get_view();
 	</div>
 	<div class="inputs five columns omega">
 		<p class="explanation">
-			<?php echo __('Color hex code to highlight the fields that have been emptied (blank means no highlight).'); ?>
+			<?php echo __('Color hex code (e.g.: #ff0000) to highlight the fields that have been emptied (blank means no highlight).'); ?>
 		</p>
-		<?php echo $view->formText('item_duplicator_empty_fields_highlight', $item_duplicator_empty_fields_highlight, null, ''); ?>
+		<?php echo $view->formText('item_duplicator_empty_fields_highlight', $item_duplicator_empty_fields_highlight, array('title'=>__('pound sign (#) followed by six hex values'),'pattern'=>'^#[0-9a-f]{6}$')); ?>
 	</div>
 </div>
 
