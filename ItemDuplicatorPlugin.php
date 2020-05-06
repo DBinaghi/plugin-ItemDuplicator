@@ -34,6 +34,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		'emptyTitleField' => array('ElementInput', 'Item', 'Dublin Core', 'Title'),
 		'emptySubjectField' => array('ElementInput', 'Item', 'Dublin Core', 'Subject'),
 		'emptyDateField' => array('ElementInput', 'Item', 'Dublin Core', 'Date'),
+		'svp_suggest_routes'
 	);
 
 	public function hookInstall()
@@ -323,4 +324,21 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		$url = $itemId ? 'items/show/' . $itemId : '.';
 		echo '<a href=' . html_escape(admin_url($url)) . ' class="big blue button">' . __('Cancel') . '</a>';
 	}
+	
+	/**
+	 * Add a route to a plugin.
+     	 *
+     	 * @param array $routePlugins Route plugins array.
+     	 * @return array Filtered route plugins array.
+    	*/
+    	public function filterSvpSuggestRoutes($routePlugins)
+    	{
+        	$routePlugins['itemduplicator'] = array(
+            		'module' => 'item-duplicator',
+            		'controller' => 'items',
+            		'actions' => array('duplicate')
+        	);
+
+        	return $routePlugins;
+    	}
 }
