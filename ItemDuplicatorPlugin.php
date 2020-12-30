@@ -211,6 +211,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	{
 		if (get_option(item_duplicator_empty_fields_check)) {
 			$request = Zend_Controller_Front::getInstance()->getRequest();
+			if (is_null($request)) return; // added to avoid conflict with other plugins
 			$controller = $request->getControllerName();
 			$action = $request->getActionName();
 			//runs checks only when duplicating item
