@@ -3,7 +3,7 @@
 /**
  * @version $Id$
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
- * @copyright Daniele Binaghi, 2018
+ * @copyright Daniele Binaghi, 2018-2020
  * @package ItemDuplicator
  */
 
@@ -69,14 +69,14 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	public function hookConfig($args)
 	{
 		$post = $args['post'];
-		set_option('item_duplicator_restricted',			$post['item_duplicator_restricted']);
-		set_option('item_duplicator_empty_title',			$post['item_duplicator_empty_title']);
-		set_option('item_duplicator_empty_subject',			$post['item_duplicator_empty_subject']);
-		set_option('item_duplicator_empty_date',			$post['item_duplicator_empty_date']);
+		set_option('item_duplicator_restricted',		$post['item_duplicator_restricted']);
+		set_option('item_duplicator_empty_title',		$post['item_duplicator_empty_title']);
+		set_option('item_duplicator_empty_subject',		$post['item_duplicator_empty_subject']);
+		set_option('item_duplicator_empty_date',		$post['item_duplicator_empty_date']);
 		set_option('item_duplicator_empty_fields_check',	$post['item_duplicator_empty_fields_check']);
-		set_option('item_duplicator_empty_fields_highlight',$post['item_duplicator_empty_fields_highlight']);
-		set_option('item_duplicator_empty_tags',			$post['item_duplicator_empty_tags']);
-		set_option('item_duplicator_private',				$post['item_duplicator_private']);
+		set_option('item_duplicator_empty_fields_highlight',	$post['item_duplicator_empty_fields_highlight']);
+		set_option('item_duplicator_empty_tags',		$post['item_duplicator_empty_tags']);
+		set_option('item_duplicator_private',			$post['item_duplicator_private']);
 	}
 	
 	public function hookConfigForm()
