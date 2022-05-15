@@ -1,9 +1,8 @@
 <?php
 
 /**
- * @version $Id$
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
- * @copyright Daniele Binaghi, 2018-2020
+ * @copyright Daniele Binaghi, 2018-2022
  * @package ItemDuplicator
  */
 
