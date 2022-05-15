@@ -209,7 +209,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	
 	public function hookBeforeSaveItem($args)
 	{
-		if (get_option(item_duplicator_empty_fields_check)) {
+		if (get_option('item_duplicator_empty_fields_check')) {
 			$request = Zend_Controller_Front::getInstance()->getRequest();
 			if (is_null($request)) return; // added to avoid conflict with other plugins
 			$controller = $request->getControllerName();
@@ -254,7 +254,7 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 						$item->addError("DC Date", __('DC Date field cannot be empty!'));
 					}
 					//checks whether item MUST be private
-					if (get_option(item_duplicator_private)) {
+					if (get_option('item_duplicator_private')) {
 						$item->setPublic(false);
 					}
 				}
