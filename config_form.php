@@ -1,12 +1,12 @@
 <?php
-	$item_duplicator_restricted		= get_option('item_duplicator_restricted');
+	$item_duplicator_restricted			= get_option('item_duplicator_restricted');
 	$item_duplicator_empty_title		= get_option('item_duplicator_empty_title');
 	$item_duplicator_empty_subject		= get_option('item_duplicator_empty_subject');
-	$item_duplicator_empty_date		= get_option('item_duplicator_empty_date');
+	$item_duplicator_empty_date			= get_option('item_duplicator_empty_date');
 	$item_duplicator_empty_fields_check	= get_option('item_duplicator_empty_fields_check');
 	$item_duplicator_empty_fields_highlight	= get_option('item_duplicator_empty_fields_highlight');
-	$item_duplicator_empty_tags		= get_option('item_duplicator_empty_tags');
-	$item_duplicator_private		= get_option('item_duplicator_private');
+	$item_duplicator_empty_tags			= get_option('item_duplicator_empty_tags');
+	$item_duplicator_private			= get_option('item_duplicator_private');
 	$item_duplicator_title_prefix		= get_option('item_duplicator_title_prefix');
 	$item_duplicator_title_suffix		= get_option('item_duplicator_title_suffix');
 	$item_duplicator_redirect_after		= get_option('item_duplicator_redirect_after') ?: 'browse';
