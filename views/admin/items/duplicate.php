@@ -10,7 +10,9 @@
 	$itemTitle = __('Duplicate Item %s', $itemId) . $itemTitle;
 
 	echo head(array('title'=> $itemTitle, 'bodyclass'=>'items edit'));
+
 	include 'form-tabs.php';
+
 	echo flash();
 ?>
 
@@ -22,8 +24,9 @@
 			
 			<?php fire_plugin_hook("admin_items_panel_buttons", array('view'=>$this, 'record'=>$item)); ?>
 			
-			<div id="public-featured"> <!-- start public-featured -->
-				<?php if ( is_allowed('Items', 'makePublic') ): ?>
+			<!-- start public-featured -->
+			<div id="public-featured">
+				<?php if (is_allowed('Items', 'makePublic')): ?>
 					<div class="public">
 						<label for="public"><?php echo __('Public'); ?>:</label> 
 						<?php 
@@ -36,15 +39,17 @@
 					</div>
 				<?php endif; ?>
 				
-				<?php if ( is_allowed('Items', 'makeFeatured') ): ?>
+				<?php if (is_allowed('Items', 'makeFeatured')): ?>
 					<div class="featured">
 						<label for="featured"><?php echo __('Featured'); ?>:</label> 
 						<?php echo $this->formCheckbox('featured', $item->featured, array(), array('1', '0')); ?>
 					</div>
 				<?php endif; ?>
-			</div> <!-- end public-featured -->
+			</div>
+			<!-- end public-featured -->
 			
-			<div id="collection-form" class="field"> <!-- start collection-form -->
+			<!-- start collection-form -->
+			<div id="collection-form" class="field"> 
 				<?php echo $this->formLabel('collection-id', __('Collection'));?>
 				<div class="inputs">
 					<?php
@@ -57,7 +62,8 @@
 					?>
 				</div>
 				<?php fire_plugin_hook('admin_items_form_collection', array('item' => $item, 'view' => $this)); ?>
-			</div> <!-- end collection-form -->
+			</div>
+			<!-- end collection-form -->
 			
 			<?php fire_plugin_hook("admin_items_panel_fields", array('view'=>$this, 'record'=>$item)); ?>
 		</div>
