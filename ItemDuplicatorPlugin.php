@@ -2,7 +2,7 @@
 
 /**
  * @license http://www.gnu.org/licenses/gpl-3.0.txt
- * @copyright Daniele Binaghi, 2018-2022
+ * @copyright Daniele Binaghi, 2018-2026
  * @package ItemDuplicator
  */
 
@@ -46,6 +46,9 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		set_option('item_duplicator_empty_fields_highlight', '#FFFF66');
 		set_option('item_duplicator_empty_tags', '0');
 		set_option('item_duplicator_private', '1');
+		set_option('item_duplicator_title_prefix', '');
+		set_option('item_duplicator_title_suffix', '');
+		set_option('item_duplicator_redirect_after', 'browse');
 	}
 
 	public function hookUninstall()
@@ -58,6 +61,9 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		delete_option('item_duplicator_empty_fields_highlight');
 		delete_option('item_duplicator_empty_tags');
 		delete_option('item_duplicator_private');
+		delete_option('item_duplicator_title_prefix');
+		delete_option('item_duplicator_title_suffix');
+		delete_option('item_duplicator_redirect_after');
 	}
 
 	public function hookInitialize()
@@ -76,6 +82,9 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 		set_option('item_duplicator_empty_fields_highlight',	$post['item_duplicator_empty_fields_highlight']);
 		set_option('item_duplicator_empty_tags',		$post['item_duplicator_empty_tags']);
 		set_option('item_duplicator_private',			$post['item_duplicator_private']);
+		set_option('item_duplicator_title_prefix',		trim($post['item_duplicator_title_prefix']));
+		set_option('item_duplicator_title_suffix',		trim($post['item_duplicator_title_suffix']));
+		set_option('item_duplicator_redirect_after',		$post['item_duplicator_redirect_after']);
 	}
 	
 	public function hookConfigForm()
@@ -87,6 +96,13 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	{
 		$acl = $args['acl'];
 		
+		// Explicit ACL check: verify the 'Items' resource exists before adding rules,
+		// and ensure the 'duplicate' privilege is properly tied to 'add'.
+		// Without this, third-party ACL plugins that restrict 'Items'/'add' would be bypassed.
+		if (!$acl->has('Items')) {
+			return;
+		}
+
 		// admins are always capable of duplicating
 		$acl->allow('admin', 'Items', 'duplicate');
 
@@ -104,16 +120,17 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 				$acl->deny('editor', 'Items', 'duplicate');
 			}		
 		} else {
-			// contributors are able to duplicate
-			$acl->allow('contributor', 'Items', 'duplicate');
+			// Tie duplicate permission to 'add': a role that cannot create items
+			// must not be able to duplicate either, since duplication inserts a new record.
+			if ($acl->isAllowed('contributor', 'Items', 'add')) {
+				$acl->allow('contributor', 'Items', 'duplicate');
+			}
 
-			// if author role exists, also authors are capable of duplicating
-			if ($acl->hasRole('author')) {
+			if ($acl->hasRole('author') && $acl->isAllowed('author', 'Items', 'add')) {
 				$acl->allow('author', 'Items', 'duplicate');
 			}   
 			
-			// if editor role exists, also editors are capable of duplicating
-			if ($acl->hasRole('editor')) {
+			if ($acl->hasRole('editor') && $acl->isAllowed('editor', 'Items', 'add')) {
 				$acl->allow('editor', 'Items', 'duplicate');
 			}   
 		}
@@ -122,8 +139,8 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	public function hookDefineRoutes($args)
 	{
 		// Don't add these routes on the public side to avoid conflicts.
-        	if (!is_admin_theme()) {
-            		return;
+			if (!is_admin_theme()) {
+					return;
 		}
 		$router = $args['router'];
 		$router->addRoute(
@@ -131,9 +148,9 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 			new Zend_Controller_Router_Route(
 				'items/duplicate/:id',
 				array(
-					'module'       => 'item-duplicator',
+					'module'	   => 'item-duplicator',
 					'controller'   => 'items',
-					'action'       => 'duplicate'
+					'action'	   => 'duplicate'
 				)
 			)
 		);
@@ -208,56 +225,67 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	
 	public function hookBeforeSaveItem($args)
 	{
-		if (get_option('item_duplicator_empty_fields_check')) {
-			$request = Zend_Controller_Front::getInstance()->getRequest();
-			if (is_null($request)) return; // added to avoid conflict with other plugins
-			$controller = $request->getControllerName();
-			$action = $request->getActionName();
-			//runs checks only when duplicating item
-			if ($controller == 'items' && $action == 'duplicate') {
-				$item = $args['record'];
-				$post = $args['post'];
-				// if POST is empty, skip the validation, so it doesn't break when saving item in another way
-				if (!empty($post)) {
-					// one may simply hardcode DC:Title element id, but it's safer for Item Type Metadata elements
-					$titleElement = $item->getElement('Dublin Core', 'Title');
-					$title = '';
-					if (!empty($post['Elements'][$titleElement->id])) {
-						foreach ($post['Elements'][$titleElement->id] as $textbox) {
-							$title .= trim($textbox['text']);
+		try {
+			if (get_option('item_duplicator_empty_fields_check')) {
+				$request = Zend_Controller_Front::getInstance()->getRequest();
+				if (is_null($request)) return; // added to avoid conflict with other plugins
+				$controller = $request->getControllerName();
+				$action = $request->getActionName();
+
+				//runs checks only when duplicating item
+				if ($controller == 'items' && $action == 'duplicate') {
+					$item = $args['record'];
+					$post = $args['post'];
+
+					// if POST is empty, skip the validation, so it doesn't break when saving item in another way
+					if (!empty($post)) {
+						// one may simply hardcode DC:Title element id, but it's safer for Item Type Metadata elements
+						$titleElement = $item->getElement('Dublin Core', 'Title');
+						$title = '';
+						if (!empty($post['Elements'][$titleElement->id])) {
+							foreach ($post['Elements'][$titleElement->id] as $textbox) {
+								$title .= trim($textbox['text']);
+							}
 						}
-					}
-					if (empty($title)) {
-						$item->addError("DC Title", __('DC Title field cannot be empty!'));
-					}
-					// one may simply hardcode DC:Subject element id, but it's safer for Item Type Metadata elements
-					$subjectElement = $item->getElement('Dublin Core', 'Subject');
-					$subject = '';
-					if (!empty($post['Elements'][$subjectElement->id])) {
-						foreach ($post['Elements'][$subjectElement->id] as $textbox) {
-							$subject .= trim($textbox['text']);
+						if (empty($title)) {
+							$item->addError("DC Title", __('DC Title field cannot be empty!'));
 						}
-					}
-					if (empty($subject)) {
-						$item->addError("DC Subject", __('DC Subject field cannot be empty!'));
-					}
-					// one may simply hardcode DC:Date element id, but it's safer for Item Type Metadata elements
-					$dateElement = $item->getElement('Dublin Core', 'Date');
-					$date = '';
-					if (!empty($post['Elements'][$dateElement->id])) {
-						foreach ($post['Elements'][$dateElement->id] as $textbox) {
-							$date .= trim($textbox['text']);
+
+						// one may simply hardcode DC:Subject element id, but it's safer for Item Type Metadata elements
+						$subjectElement = $item->getElement('Dublin Core', 'Subject');
+						$subject = '';
+						if (!empty($post['Elements'][$subjectElement->id])) {
+							foreach ($post['Elements'][$subjectElement->id] as $textbox) {
+								$subject .= trim($textbox['text']);
+							}
 						}
-					}
-					if (empty($date)) {
-						$item->addError("DC Date", __('DC Date field cannot be empty!'));
-					}
-					//checks whether item MUST be private
-					if (get_option('item_duplicator_private')) {
-						$item->setPublic(false);
+						if (empty($subject)) {
+							$item->addError("DC Subject", __('DC Subject field cannot be empty!'));
+						}
+
+						// one may simply hardcode DC:Date element id, but it's safer for Item Type Metadata elements
+						$dateElement = $item->getElement('Dublin Core', 'Date');
+						$date = '';
+						if (!empty($post['Elements'][$dateElement->id])) {
+							foreach ($post['Elements'][$dateElement->id] as $textbox) {
+								$date .= trim($textbox['text']);
+							}
+						}
+						if (empty($date)) {
+							$item->addError("DC Date", __('DC Date field cannot be empty!'));
+						}
+
+						//checks whether item MUST be private
+						if (get_option('item_duplicator_private')) {
+							$item->setPublic(false);
+						}
 					}
 				}
 			}
+		} catch (\Throwable $e) {
+			$flash = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
+			$flash->addMessage('DEBUG hookBeforeSaveItem: ' . $e->getMessage()
+				. ' — ' . basename($e->getFile()) . ':' . $e->getLine(), 'error');
 		}
 	}
 	
@@ -268,7 +296,17 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 			$controller = $request->getControllerName();
 			$action = $request->getActionName();
 			if ($controller == 'items' && $action == 'duplicate') {
-				$components['input'] = get_view()->formTextarea($args['input_name_stem'] . '[text]', '', array(
+				// Apply title prefix/suffix if configured; otherwise leave field empty as before
+				$prefix = get_option('item_duplicator_title_prefix');
+				$suffix = get_option('item_duplicator_title_suffix');
+				$newTitle = '';
+				if (($prefix !== '' || $suffix !== '') && isset($args['record'])) {
+					$m = new Omeka_View_Helper_Metadata;
+					$originalTitle = strip_formatting($m->metadata($args['record'], array('Dublin Core', 'Title')));
+					$newTitle = $prefix . $originalTitle . $suffix;
+				}
+
+				$components['input'] = get_view()->formTextarea($args['input_name_stem'] . '[text]', $newTitle, array(
 					'cols' => 50,
 					'rows' => 3,
 					'autofocus' => 1,
@@ -327,18 +365,18 @@ class ItemDuplicatorPlugin extends Omeka_Plugin_AbstractPlugin
 	
 	/**
 	 * Add a route to a plugin.
-     	 *
-     	 * @param array $routePlugins Route plugins array.
-     	 * @return array Filtered route plugins array.
-    	*/
-    	public function filterSvpSuggestRoutes($routePlugins)
-    	{
-        	$routePlugins['itemduplicator'] = array(
-            		'module' => 'item-duplicator',
-            		'controller' => 'items',
-            		'actions' => array('duplicate')
-        	);
+	 *
+	 * @param array $routePlugins Route plugins array.
+	 * @return array Filtered route plugins array.
+	*/
+	public function filterSvpSuggestRoutes($routePlugins)
+	{
+		$routePlugins['itemduplicator'] = array(
+				'module' => 'item-duplicator',
+				'controller' => 'items',
+				'actions' => array('duplicate')
+		);
 
-        	return $routePlugins;
-    	}
+		return $routePlugins;
+	}
 }
